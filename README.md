@@ -1,5 +1,5 @@
 # 478
 
-an simple card game
+a simple card game
 
 this is game's backend
