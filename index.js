@@ -19,11 +19,6 @@ app.get("/teapot", (req, res) => {
   execute("./modules/teapot", req, res);
 });
 
-// Bruh
-app.get("/bruh", (req, res) => {
-  execute("./modules/bruh", req, res);
-});
-
 // Server modules
 app.get("/server/information", (req, res) => {
   execute("./modules/server/information", req, res);
