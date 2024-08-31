@@ -1,6 +1,6 @@
 import logger from "../utils/logger";
 
-// 初始化牌池
+// 牌池表
 let cardsPool = [
   ,
   ,
@@ -24,10 +24,24 @@ let cardsPool = [
   [2, 2, 5, 5, 5],
 ];
 
-export function shuffle(sumCardsPool) {
+// 结果表
+let result = [
+  ,
+  [, [0, 0], [1, "B"], , , [5, "A"]],
+  [, [1, "A"], [0, 0], , , [2, "B"]],
+  ,
+  ,
+  [, [5, "B"], [2, "A"], , , [0, 0]],
+];
+
+// 随机抽牌
+export async function shuffle(sumCardsPool) {
   let randomCard = cardsPool[sumCardsPool][Math.floor(Math.random() * 5)];
-  if (randomCard == 5) {
-    randomCard = 4;
-  }
   return randomCard;
+}
+
+// 返回输牌和赢者
+export async function determine(cardA, cardB) {
+  let resultArr = result[cardA][cardB];
+  return resultArr;
 }
