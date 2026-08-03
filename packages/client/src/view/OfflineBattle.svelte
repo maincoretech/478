@@ -44,7 +44,7 @@
 
   function exchange() {
     if (!gameState.players.A.tieEx || selected === -1) return;
-    const r = doExchange(gameState);
+    const r = doExchange(gameState, myHand[selected]);
     if (!r) return;
     game.players.A.hand = unpack(gameState.players.A.hand);
     game.players.A.canExchangeOnTie = false;

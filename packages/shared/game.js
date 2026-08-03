@@ -143,15 +143,15 @@ export const playRound = (state, humanCard, botStrategy = "random") => {
 /**
  * Human requests tie-exchange.
  */
-export const doExchange = (state) => {
+export const doExchange = (state, card) => {
   if (state.status !== "playing" || !state.players.A.tieEx) return null;
-  const c = first(state.players.A.hand);
+  const c = (card != null && has(state.players.A.hand, card)) ? card : first(state.players.A.hand);
   state.players.A.hand = rem(state.players.A.hand, c);
   state.pool = add(state.pool, c);
   const d = draw(state.pool);
   state.players.A.hand = add(state.players.A.hand, d.card);
   state.pool = d.np;
   state.players.A.tieEx = 0;
-  state.tieCount = 0;
+  state.players.A.tieCount = 0;
   return { type: "tie-exchange", playerId: "A", putIntoPool: c, drew: d.card };
 };
