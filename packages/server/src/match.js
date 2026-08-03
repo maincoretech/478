@@ -227,11 +227,12 @@ export async function submitMove(mid, uid, p) {
   return (m.pendingMoves.A != null && m.pendingMoves.B != null) ? resolveServerRound(m) : { match: serMatch(m, uid) };
 }
 
-export async function exchangeCard(mid, uid) {
+export async function exchangeCard(mid, uid, payload) {
   const m = await getOwnedMatch(mid, uid);
   if (m.status !== "playing") throw new MatchError(400, "Finished.");
   const seat = m.mode === "human-vs-bot" ? "A" : (m.players.A.userId === uid ? "A" : "B");
-  const c = first(m.players[seat].hand);
+  const reqCard = payload?.card != null ? nCard(payload.card) : null;
+  const c = (reqCard != null && has(m.players[seat].hand, reqCard)) ? reqCard : first(m.players[seat].hand);
   const ex = serverTieExchange(m, seat, c);
   m.history.push(ex); commit(m);
   return { exchange: { ...ex }, match: serMatch(m, uid) };

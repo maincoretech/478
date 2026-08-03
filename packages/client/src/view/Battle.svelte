@@ -188,7 +188,7 @@
     }
     if (k === "arrowleft" || k === "a" || k === "arrowup" || k === "w") selected = selected <= 0 ? myHand.length - 1 : selected - 1;
     else if (k === "arrowright" || k === "d" || k === "arrowdown" || k === "s") selected = selected >= myHand.length - 1 ? 0 : selected + 1;
-    else if ((k === "enter" || k === " ") && selected !== -1) submitMove();
+    else if ((k === "enter" || k === " ") && selected !== -1) play(selected, myHand[selected]);
   }
 
   $effect(() => {
