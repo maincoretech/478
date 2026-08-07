@@ -52,9 +52,11 @@
       {#if server}
         <dl class="desc-list">
           <dt>{$_("info.name")}</dt><dd>{server.name}</dd>
+          <dt>{$_("info.version")}</dt><dd>{server.version}</dd>
           <dt>{$_("info.host")}</dt><dd>{server.host}</dd>
           <dt>{$_("info.port")}</dt><dd>{server.port}</dd>
           <dt>{$_("info.storage")}</dt><dd>{server.storage}</dd>
+          <dt>{$_("info.build_time")}</dt><dd>{server.buildTime}</dd>
         </dl>
       {:else}
         <p class="muted">{$_("info.loading")}</p>

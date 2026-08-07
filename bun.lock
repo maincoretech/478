@@ -7,7 +7,7 @@
     },
     "packages/client": {
       "name": "@krps/client",
-      "version": "0.0.2",
+      "version": "1.0.0",
       "dependencies": {
         "@iconify/svelte": "^5.2.2",
         "svelte": "^5.56.4",
@@ -24,7 +24,7 @@
     },
     "packages/server": {
       "name": "@krps/server",
-      "version": "0.0.1",
+      "version": "1.0.0",
       "bin": {
         "krps": "./index.js",
       },

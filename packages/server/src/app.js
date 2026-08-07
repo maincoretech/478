@@ -23,6 +23,7 @@ import { getAdminBackupConfig, getAdminConfig, getAdminLogs, getAdminOverview, s
 import adminHtmlPath from "../public/admin/index.html" with { type: "file" };
 import adminJsPath from "../public/admin/app.js" with { type: "file" };
 import adminCssPath from "../public/admin/styles.css" with { type: "file" };
+import serverPkg from "../../../package.json" with { type: "json" };
 import {
   createMatch,
   deleteMatchData,
@@ -47,6 +48,9 @@ import logger from "./logger.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const startedAt = Date.now();
+const serverVersion = serverPkg.version;
+// Baked in by build pipelines via BUILD_TIME, otherwise the moment this server code was loaded.
+const serverBuildTime = process.env.BUILD_TIME || new Date().toISOString();
 
 global.wsClients = new Set();
 
@@ -206,6 +210,8 @@ export const app = new Elysia()
           host: config.hostname,
           port: config.serverPort,
           storage: getStorePath(),
+          version: serverVersion,
+          buildTime: serverBuildTime,
         },
         auth: { tokenTtlHours: config.authTokenTtlHours },
       };

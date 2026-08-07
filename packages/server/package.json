@@ -1,6 +1,6 @@
 {
   "name": "@krps/server",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "krps card game backend with admin panel and CLI",
   "module": "index.js",
   "type": "module",
