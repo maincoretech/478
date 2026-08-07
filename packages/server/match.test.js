@@ -1,8 +1,11 @@
 import { describe, test, expect, mock } from "bun:test";
-import { resolveRound, sortCards, getInferredHumanHand } from "./src/match.js";
+import { resolveRound, sortCards, getInferredHumanHand, exchangeCard } from "./src/match.js";
+import { createState, doExchange } from "../shared/game.js";
+import { cnt } from "../shared/cards.js";
 
+let currentMatch = null;
 mock.module("./src/db.js", () => ({
-  updateMatch: () => {}, findMatchById: () => {}, insertMatch: () => {},
+  updateMatch: () => {}, findMatchById: () => currentMatch, insertMatch: () => {},
   listMatchesByOwner: () => [], listMatchesByUser: () => [], deleteMatch: () => {},
   findMatchByInviteCode: () => null, upsertUser: () => {}, getLeaderboard: () => [],
   getStorePath: () => "", db: { query: () => ({ all: () => [] }) },
@@ -241,5 +244,73 @@ describe("Full Game", () => {
       expect(["win","lose","tie"]).toContain(h.result);
       expect([0,1,2]).toContain(h.cards.A);
     }
+  });
+});
+
+// ═══ Tie Exchange Card Selection (regression: PR #1) ═══
+describe("Exchange Selection (doExchange)", () => {
+  test("exchanges the requested card instead of always first()", () => {
+    const s = createState();
+    s.players.A.tieEx = 1; s.players.A.tieCount = 3;
+    const r = doExchange(s, 1); // select Paper
+    expect(r.putIntoPool).toBe(1);
+    expect(cnt(s.players.A.hand)).toBe(3);
+    expect(s.players.A.tieEx).toBe(0);
+  });
+
+  test("resets the player's tieCount (not a no-op on the root state)", () => {
+    const s = createState();
+    s.players.A.tieEx = 1; s.players.A.tieCount = 3;
+    doExchange(s, 0);
+    expect(s.players.A.tieCount).toBe(0);
+    expect("tieCount" in s).toBe(false); // root-level reset was the bug
+  });
+
+  test("without a card param keeps legacy first() behavior", () => {
+    const s = createState();
+    s.players.A.tieEx = 1; s.players.A.tieCount = 3;
+    const r = doExchange(s);
+    expect(r.putIntoPool).toBe(0); // Rock
+  });
+
+  test("falls back to first() when requested card is not in hand", () => {
+    const s = createState();
+    s.players.A.hand = (1 << 3) | (1 << 6); // Paper + Scissors, no Rock
+    s.players.A.tieEx = 1;
+    const r = doExchange(s, 0);
+    expect(r.putIntoPool).toBe(1); // smallest present
+  });
+});
+
+describe("Server exchangeCard selection", () => {
+  const mkBotMatch = (id, hand) => ({
+    id, mode: "human-vs-bot", ownerId: "u1", status: "playing", botStrategy: "random",
+    roundCount: 0, pool: [0, 1, 2, 2], history: [], pendingMoves: null,
+    version: 1, createdAt: T(), updatedAt: T(), name: id,
+    players: { A: { userId: "u1", hand, losses: 0, tieEx: 1, tieCount: 3 },
+               B: { userId: null, hand: [0, 1, 2], losses: 0, tieEx: 0, tieCount: 0 } },
+  });
+
+  test("legacy call (no payload) swaps smallest card", async () => {
+    currentMatch = mkBotMatch("x1", [0, 1, 2]);
+    const res = await exchangeCard("x1", "u1");
+    expect(res.exchange.putIntoPool).toBe(0);
+  });
+
+  test("payload.card is respected", async () => {
+    currentMatch = mkBotMatch("x2", [0, 1, 2]);
+    const res = await exchangeCard("x2", "u1", { card: 1 });
+    expect(res.exchange.putIntoPool).toBe(1);
+  });
+
+  test("invalid card type is rejected", async () => {
+    currentMatch = mkBotMatch("x3", [0, 1, 2]);
+    await expect(exchangeCard("x3", "u1", { card: 7 })).rejects.toThrow("Card 0/1/2.");
+  });
+
+  test("falls back to first() when requested card is not in hand", async () => {
+    currentMatch = mkBotMatch("x4", [1, 2]);
+    const res = await exchangeCard("x4", "u1", { card: 0 });
+    expect(res.exchange.putIntoPool).toBe(1);
   });
 });

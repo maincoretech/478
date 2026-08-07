@@ -256,7 +256,7 @@
                    style="--offset:{i - (myHand.length - 1) / 2};--abs-offset:{Math.abs(i - (myHand.length - 1) / 2)}"
                    role="button" tabindex="0"
                    onclick={(e) => { e.stopPropagation(); play(i, c); }}
-                   onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); submitMove(); } }}>
+                   onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(i, c); } }}>
                 <div class="ico"><AppIcon name={iconName(c)} /></div>
                 {#if selected !== i}<div class="shortcut">{i + 1}</div>{:else}<div class="name">{typeName(c)}<br />[{i + 1}]</div>{/if}
               </div>
