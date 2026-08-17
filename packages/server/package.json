@@ -19,7 +19,7 @@
     "status": "bun run index.js status"
   },
   "author": "shiftz300",
-  "license": "MPL-2.0",
+  "license": "Apache-2.0",
   "dependencies": {
     "@elysiajs/bearer": "^1.4.4",
     "@elysiajs/cors": "^1.4.2",

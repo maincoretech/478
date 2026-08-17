@@ -22,5 +22,5 @@
     "status": "bun run --cwd packages/server status"
   },
   "author": "shiftz300",
-  "license": "MPL-2.0"
+  "license": "Apache-2.0"
 }
